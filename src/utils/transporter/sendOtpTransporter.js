@@ -5,7 +5,7 @@ const sendOtpNotification = async (email, otp) => {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: "Dummy Web",
+      subject: "🏥 HealthMate",
       html: `
     <div style="
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -24,7 +24,7 @@ const sendOtpNotification = async (email, otp) => {
         <h2 style="
           color: #333333;
           margin-bottom: 10px;
-        ">Dummy Web OTP Code</h2>
+        ">Health Mate OTP Code</h2>
 
         <p style="
           color: #555555;

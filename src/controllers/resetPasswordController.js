@@ -1,7 +1,7 @@
 import UserAuth from "../models/auth.schema.js";
 import { hashedPassword } from "../utils/hash.js";
 
-const resetPassword = async () => {
+const resetPassword = async (req, res) => {
   try {
     const { email, password, confirmPassword } = req.body;
 
@@ -18,8 +18,7 @@ const resetPassword = async () => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    const convertHashedPassword = hashedPassword();
-
+    const convertHashedPassword = await hashedPassword(password);
     user.password = convertHashedPassword;
     await user.save();
 

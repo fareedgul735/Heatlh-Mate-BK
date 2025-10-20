@@ -5,7 +5,7 @@ const sendOtpNotificationForgetPassword = async (email, otp) => {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: "Dummy Web",
+      subject: "🏥 HealthMate",
       html: `
     <div style="
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -24,15 +24,9 @@ const sendOtpNotificationForgetPassword = async (email, otp) => {
         <h2 style="
           color: #333333;
           margin-bottom: 10px;
-        ">Dummy Web Forget OTP Code</h2>
+        ">Health Mate Forget OTP Code</h2>
+<h2 style="color: #333;">Password Reset Verification Code</h2>
 
-        <p style="
-          color: #555555;
-          font-size: 16px;
-          margin-bottom: 20px;
-        ">
-          Use the following code to complete your signup:
-        </p>
 
         <div style="
           display: inline-block;
@@ -58,12 +52,11 @@ const sendOtpNotificationForgetPassword = async (email, otp) => {
 
         <hr style="border: none; border-top: 1px solid #eee; margin: 25px 0;">
 
-        <p style="
-          font-size: 13px;
-          color: #999999;
-        ">
-          If you did not request this, you can safely ignore this email.
-        </p>
+<p style="font-size: 12px; color: #aaa;">
+  — The HealthMate Team<br>
+  © ${new Date().getFullYear()} HealthMate, All rights reserved.
+</p>
+
       </div>
     </div>
   `,

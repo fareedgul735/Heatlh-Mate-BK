@@ -1,2 +1,2 @@
-export const PORT = process.env.PORT || 8080;
-export const HOST = "0.0.0.0"; // ✅ Needed for Railway
+export const PORT = process.env.PORT || 5000;
+export const HOST = "localhost";
