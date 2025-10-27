@@ -7,7 +7,7 @@ const reportSchema = new mongoose.Schema(
     type: String,
     notes: String,
     fileUrl: String,
-    aiSummary: Object, // store Gemini output (English + Urdu)
+    aiSummary: Object,
   },
   { timestamps: true }
 );
