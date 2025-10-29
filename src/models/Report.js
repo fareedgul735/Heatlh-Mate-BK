@@ -1,16 +1,63 @@
 import mongoose from "mongoose";
 
-const reportSchema = new mongoose.Schema({
-  date: String,
-  type: String,
-  inputValue: String,
-  summary_en: String,
-  summary_ru: String,
-  highlights: [String],
-  doctor_questions: [String],
-  createdAt: { type: Date, default: Date.now },
-});
+const reportsSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      trim: true,
+    },
+    testName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    files: [
+      {
+        name: String,
+        url: String,
+      },
+    ],
+    hospital: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    doctor: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    notes: {
+      type: String,
+      trim: true,
+    },
 
-const Report = mongoose.model("Report", reportSchema);
+    systolic: Number,
+    diastolic: Number,
+    temperature: Number,
+    sugar: Number,
+    height: Number,
+    weight: Number,
 
-export default Report;
+    aiPrompt: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Reports = mongoose.model("Report", reportsSchema);
+
+export default Reports;
