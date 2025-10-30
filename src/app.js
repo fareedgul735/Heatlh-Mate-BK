@@ -8,7 +8,7 @@ import reportsAiRouter from "./routes/reportRoutes.js";
 
 const app = express();
 
-app.use(cors());
+app.use(cors("https://health-mate-two-sandy.vercel.app/health_mate"));
 app.use(express.json());
 app.use("/api/auth", router);
 app.use("/api/security", sendOtpRouter);
