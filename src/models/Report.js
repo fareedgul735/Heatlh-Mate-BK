@@ -52,6 +52,20 @@ const reportsSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
+    aiResponse: {
+      summary: { type: String },
+      keyFindings: [{ type: String }],
+      recommendations: [{ type: String }],
+      riskFactors: [{ type: String }],
+      urgencyLevel: { type: String, enum: ["routine", "attention", "urgent"] },
+      confidence: { type: Number },
+    },
+
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserAuth",
+    },
   },
   {
     timestamps: true,

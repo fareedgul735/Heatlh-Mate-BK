@@ -4,7 +4,16 @@ export const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 };
 
-export const verifyToken = (req, res) => {
+export const verifyToken = (token) => {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET_KEY);
+  } catch (error) {
+    console.error("JWT verification failed:", error.message);
+    return null;
+  }
+};
+
+export const verifyTokenGetUser = (req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

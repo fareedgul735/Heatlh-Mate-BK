@@ -1,9 +1,9 @@
 import UserAuth from "../models/auth.schema.js";
-import { verifyToken } from "../utils/jwt.js";
+import { verifyTokenGetUser } from "../utils/jwt.js";
 
 const getUserData = async (req, res) => {
   try {
-    const { decoded, error } = verifyToken(req, res);
+    const { decoded, error } = verifyTokenGetUser(req, res);
     if (error) {
       return res.status(401).json({ msg: error });
     }

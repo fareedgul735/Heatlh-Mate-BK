@@ -5,6 +5,7 @@ import Report from "../models/Report.js";
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 const uploadReportsAiResponse = async (req, res) => {
   try {
     const {
@@ -31,13 +32,30 @@ const uploadReportsAiResponse = async (req, res) => {
       });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const userId = req.user?._id;
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated!",
+      });
+    }
+
+    const uploadedFiles =
+      req.files?.map((file) => ({
+        name: file.originalname,
+        url: file.path, 
+        public_id: file.filename, 
+      })) || [];
+
+    console.log("📁 Uploaded Files:", uploadedFiles);
+
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
     You are a professional medical AI assistant.
     Analyze the following patient's report details and symptoms, 
     then provide a structured health analysis.
-    
+
     **Report Information:**
     - Test Name: ${testName}
     - Hospital / Lab: ${hospital}
@@ -45,35 +63,29 @@ const uploadReportsAiResponse = async (req, res) => {
     - Date: ${date}
     - Price: Rs ${price}
     - Notes: ${notes || "N/A"}
-    
+
     **Patient vitals (if provided):**
     - BP: ${systolic || "N/A"} / ${diastolic || "N/A"} mmHg
     - Temperature: ${temperature || "N/A"} °F
     - Sugar: ${sugar || "N/A"} mg/dL
     - Height: ${height || "N/A"} cm
     - Weight: ${weight || "N/A"} kg
-    
+
     **Patient's concern:**
     ${aiPrompt}
-    
-    Please provide your response in the following JSON format:
-    
+
+    Please provide your response in JSON format:
     {
-    "summary": "Brief overall health assessment",
-    "keyFindings": ["Finding 1", "Finding 2", "Finding 3"],
-    "recommendations": ["Recommendation 1", "Recommendation 2", "Recommendation 3"],
-    "riskFactors": ["Risk factor 1", "Risk factor 2"],
-    "urgencyLevel": "routine | attention | urgent",
-    "confidence": 0.85
-    }
-    
-    Be precise, professional, and relevant to Pakistani healthcare context.
-    Include short Urdu translation if helpful.
-    `;
+      "summary": "Brief overall health assessment",
+      "keyFindings": ["Finding 1", "Finding 2"],
+      "recommendations": ["Recommendation 1", "Recommendation 2"],
+      "riskFactors": ["Risk 1", "Risk 2"],
+      "urgencyLevel": "routine | attention | urgent",
+      "confidence": 0.85
+    }`;
 
     const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+    const text = result.response.text();
 
     let aiAnalysis;
     try {
@@ -88,21 +100,22 @@ const uploadReportsAiResponse = async (req, res) => {
         summary: "AI generated analysis not fully structured.",
         keyFindings: [
           "General health data analyzed successfully.",
-          "Some values appear normal or within common ranges.",
+          "Some values appear normal.",
           "Further review by your doctor recommended.",
         ],
         recommendations: [
           "Discuss results with your doctor.",
           "Maintain a healthy diet and regular checkups.",
-          "Follow any specific instructions given by your physician.",
+          "Follow doctor's advice.",
         ],
-        riskFactors: ["Undetermined - requires clinical review."],
+        riskFactors: ["Undetermined - requires review."],
         urgencyLevel: "routine",
         confidence: 0.75,
       };
     }
 
     const newReport = await Report.create({
+      userId,
       title,
       testName,
       hospital,
@@ -118,20 +131,25 @@ const uploadReportsAiResponse = async (req, res) => {
       weight,
       aiPrompt,
       aiResponse: aiAnalysis,
-      userId: req.user.id,
+      files: uploadedFiles,
     });
 
-    res.json({
-      success: true,
-      report: newReport,
-      aiResponse: aiAnalysis,
-    });
+    console.log("✅ New Report Saved:", newReport);
+
+    if (newReport) {
+      res.json({
+        success: true,
+        report: newReport,
+        aiResponse: aiAnalysis,
+      });
+    }
   } catch (error) {
-    console.error("Error generating AI analysis:", error);
+    console.error("❌ Error generating AI analysis:", error);
     res.status(500).json({
       success: false,
       message: "Failed to generate AI insight.",
     });
   }
 };
+
 export default uploadReportsAiResponse;
